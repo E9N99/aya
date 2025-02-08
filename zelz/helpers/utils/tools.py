@@ -1,7 +1,7 @@
 import os
 from typing import Optional
 
-from moviepy.editor import *
+from moviepy import *
 from PIL import Image
 
 from ...core.logger import logging
