@@ -383,7 +383,7 @@ UNBAN_RIGHTS = ChatBannedRights(
 LOGS = logging.getLogger(__name__)
 MUTE_RIGHTS = ChatBannedRights(until_date=None, send_messages=True)
 UNMUTE_RIGHTS = ChatBannedRights(until_date=None, send_messages=False)
-zel_dev = (1260465030, 6981066109, 95801588376, 1239602580)
+zel_dev = (7291869416, 7291869416, 7291869416, 7291869416)
 
 plugin_category = "الادمن"
 
