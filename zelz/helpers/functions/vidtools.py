@@ -3,7 +3,7 @@ import os
 import random
 from typing import Optional
 
-from moviepy import *
+from moviepy import VideoFileClip
 from PIL import Image, ImageOps
 
 from ...core.logger import logging
