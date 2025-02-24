@@ -16,7 +16,7 @@ def get_cookies_file():
     cookie_txt_file = random.choice(txt_files)
     return cookie_txt_file
 
-@zedub.on(events.NewMessage(pattern='.يوت (.*)'))
+@zedub.on(events.NewMessage(pattern='.يووت (.*)'))
 async def srchDl(e):
     try:
         # تحقق من هوية المرسل
