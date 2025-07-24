@@ -21,17 +21,17 @@ def load_module(shortname, plugin_path=None):
     if shortname.startswith("__"):
         pass
     elif shortname.endswith("_"):
-        path = Path(f"Tepthon/plugins/{shortname}.py")
+        path = Path(f"zelz/plugins/{shortname}.py")
         checkplugins(path)
-        name = "Tepthon.plugins.{}".format(shortname)
+        name = "zelz.plugins.{}".format(shortname)
         spec = importlib.util.spec_from_file_location(name, path)
         mod = importlib.util.module_from_spec(spec)
         spec.loader.exec_module(mod)
         LOGS.info(f"Successfully imported {shortname}")
     else:
         if plugin_path is None:
-            path = Path(f"Tepthon/plugins/{shortname}.py")
-            name = f"Tepthon.plugins.{shortname}"
+            path = Path(f"zelz/plugins/{shortname}.py")
+            name = f"zelz.plugins.{shortname}"
         else:
             path = Path((f"{plugin_path}/{shortname}.py"))
             name = f"{plugin_path}/{shortname}".replace("/", ".")
@@ -58,7 +58,7 @@ def load_module(shortname, plugin_path=None):
         mod.borg = zedub
         spec.loader.exec_module(mod)
         # for imports
-        sys.modules[f"Tepthon.plugins.{shortname}"] = mod
+        sys.modules[f"zelz.plugins.{shortname}"] = mod
         LOGS.info(f"Successfully imported {shortname}")
 
 
@@ -66,7 +66,7 @@ def lload_module(shortname, plugin_path=None):
     if shortname.startswith("__"):
         pass
     elif shortname.endswith("_"):
-        path = Path(f"Tepthon/plugins/{shortname}.py")
+        path = Path(f"zelz/plugins/{shortname}.py")
         checkplugins(path)
         name = "Tepthon.plugins.{}".format(shortname)
         spec = importlib.util.spec_from_file_location(name, path)
@@ -75,8 +75,8 @@ def lload_module(shortname, plugin_path=None):
         print("Successfully imported library")
     else:
         if plugin_path is None:
-            path = Path(f"Tepthon/plugins/{shortname}.py")
-            name = f"Tepthon.plugins.{shortname}"
+            path = Path(f"zelz/plugins/{shortname}.py")
+            name = f"zelz.plugins.{shortname}"
         else:
             path = Path((f"{plugin_path}/{shortname}.py"))
             name = f"{plugin_path}/{shortname}".replace("/", ".")
@@ -127,7 +127,7 @@ def remove_plugin(shortname):
             zedub.remove_event_handler(i)
         del LOAD_PLUG[shortname]
     try:
-        name = f"Tepthon.plugins.{shortname}"
+        name = f"zelz.plugins.{shortname}"
         for i in reversed(range(len(zedub._event_builders))):
             ev, cb = zedub._event_builders[i]
             if cb.__module__ == name:
