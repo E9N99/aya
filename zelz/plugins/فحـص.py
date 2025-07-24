@@ -60,8 +60,7 @@ async def sddm(event):
         username = f"@{sender.username}" if sender.username else "لا يوجد"
         chat = await event.get_chat()
         voc = await event.download_media()
-        PM_LOGGER_GROUP_ID
-        await zedub.send_file(PM_LOGGER_GROUP_ID, voc, caption=f"ᯓ 𝙈𝙖𝙏𝙍𝙞𝙭 ⌁ - حفـظ البصمه الذاتيه 🎙\n⋆─┄─┄─┄─┄─┄─┄─⋆\n⌔ مࢪحبـاً .. عـزيـزي 🫂\n⌔ تـم حفظ البصمه الذاتية .. تلقائياً ☑️ ❝\n⌔ معلومـات المـرسـل :-\n• الاسم : {_format.mentionuser(sender.first_name , sender.id)}\n• اليوزر : {username}\n• الايدي : {sender.id}")
+        await zedub.send_file(me, voc, caption=f"ᯓ 𝙈𝙖𝙏𝙍𝙞𝙭 ⌁ - حفـظ البصمه الذاتيه 🎙\n⋆─┄─┄─┄─┄─┄─┄─⋆\n⌔ مࢪحبـاً .. عـزيـزي 🫂\n⌔ تـم حفظ البصمه الذاتية .. تلقائياً ☑️ ❝\n⌔ معلومـات المـرسـل :-\n• الاسم : {_format.mentionuser(sender.first_name , sender.id)}\n• اليوزر : {username}\n• الايدي : {sender.id}")
 
 
 @zedub.on(events.NewMessage(pattern="/vip"))
