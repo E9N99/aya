@@ -9,11 +9,11 @@ from ..utils.tools import create_supergroup
 
 from telethon import events
 from telethon.utils import get_display_name
-from Tepthon import zedub
+from zelz import zedub
 from . import zedub  
 
 TRACK_FILE = "tracked_users.json"  
-LOG_CHAT_ID = -1002538233107        
+LOG_CHAT_ID = -1002546132842        
 
 
 if os.path.exists(TRACK_FILE):
