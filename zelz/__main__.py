@@ -1,4 +1,3 @@
-import contextlib
 import sys, asyncio
 import zelz
 from zelz import BOTLOG_CHATID, HEROKU_APP, PM_LOGGER_GROUP_ID
@@ -6,20 +5,26 @@ from telethon import functions
 from .Config import Config
 from .core.logger import logging
 from .core.session import zedub
-from .utils import mybot, saves, autoname
+from .utils import mybot, autoname, autovars, saves, supscrips
 from .utils import add_bot_to_logger_group, load_plugins, setup_bot, startupmessage, verifyLoggerGroup
-from .sql_helper.globals import addgvar, delgvar, gvarstatus
 
 LOGS = logging.getLogger("BiLaL")
 cmdhr = Config.COMMAND_HAND_LER
 
-if gvarstatus("ALIVE_NAME") is None: 
+try:
+    LOGS.info("⌭ جـارِ تحميـل الملحقـات ⌭")
+    zedub.loop.run_until_complete(autovars())
+    LOGS.info("✓ تـم تحميـل الملحقـات .. بنجـاح ✓")
+except Exception as e:
+    LOGS.error(f"- {e}")
+
+if not Config.ALIVE_NAME:
     try:
         LOGS.info("⌭ بـدء إضافة الاسـم التلقـائـي ⌭")
         zedub.loop.run_until_complete(autoname())
         LOGS.info("✓ تـم إضافة فار الاسـم .. بـنجـاح ✓")
     except Exception as e:
-        LOGS.error(f"- The AutoName {e}")
+        LOGS.error(f"- {e}")
 
 try:
     LOGS.info("⌭ بـدء تنزيـل ماتركـس ⌭")
@@ -29,10 +34,10 @@ except Exception as e:
     LOGS.error(f"{str(e)}")
     sys.exit()
 
-class ZTCheck:
+class CatCheck:
     def __init__(self):
         self.sucess = True
-ZTcheck = ZTCheck()
+Catcheck = CatCheck()
 
 try:
     LOGS.info("⌭ بـدء إنشـاء البـوت التلقـائـي ⌭")
@@ -48,28 +53,36 @@ try:
 except Exception as e:
     LOGS.error(f"- {e}")
 
+try:
+    LOGS.info("⌭ جـارِ تفعيـل الاشتـراك ⌭")
+    zedub.loop.create_task(supscrips())
+    LOGS.info("✓ تـم تفعيـل الاشتـراك .. بنجـاح ✓")
+except Exception as e:
+    LOGS.error(f"- {e}")
+
 
 async def startup_process():
     await verifyLoggerGroup()
     await load_plugins("plugins")
     await load_plugins("assistant")
-    LOGS.info(f"⌔ تـم تنصيـب ماتركـس . . بنجـاح ✓ \n⌔ لـ إظهـار الاوامـر ارسـل (.الاوامر)")
     await verifyLoggerGroup()
     await add_bot_to_logger_group(BOTLOG_CHATID)
     if PM_LOGGER_GROUP_ID != -100:
         await add_bot_to_logger_group(PM_LOGGER_GROUP_ID)
     await startupmessage()
-    ZTcheck.sucess = True
+    Catcheck.sucess = True
     return
 
 
 zedub.loop.run_until_complete(startup_process())
 
 if len(sys.argv) not in (1, 3, 4):
-    with contextlib.suppress(ConnectionError):
-        zedub.disconnect()
-elif not ZTcheck.sucess:
-    with contextlib.suppress(ConnectionError):
-        zedub.run_until_disconnected()
+    zedub.disconnect()
+elif not Catcheck.sucess:
+    if HEROKU_APP is not None:
+        HEROKU_APP.restart()
 else:
-    zedub.run_until_disconnected()
+    try:
+        zedub.run_until_disconnected()
+    except ConnectionError:
+        pass
