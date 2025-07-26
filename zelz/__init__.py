@@ -1,7 +1,6 @@
 import signal
 import sys
 import time
-
 import heroku3
 
 from .Config import Config
@@ -12,20 +11,20 @@ from .helpers.functions.musictool import *
 from .helpers.utils.utils import runasync
 from .sql_helper.globals import addgvar, delgvar, gvarstatus
 
-__version__ = "3.3.3"
+__version__ = "3.3.4"
 __license__ = "حقـوق سـورس ماتركـس"
-__author__ = "ماتركـس <https://T.me/veevvw>"
-__copyright__ = "Matrix Source (C) 2020 - 2024  " + __author__
+__author__ = "ماتركـس <https://T.me/BDB0B>"
+__copyright__ = "MATRIX Source (C) 2020 - 2024  " + __author__
 
 zedub.version = __version__
-LOGS = logging.getLogger("ماتركس")
+LOGS = logging.getLogger("ماتركـس")
 bot = zedub
 
 StartTime = time.time()
-zedversion = "3.3.3"
+zedversion = "3.3.4"
 
-if Config.UPSTREAM_REPO == "zel":
-    UPSTREAM_REPO_URL = "https://github.com/E9N99/KOYEB"
+if Config.UPSTREAM_REPO == "matrix-Bot":
+    UPSTREAM_REPO_URL = "https://github.com/E9N99/aya"
 else:
     UPSTREAM_REPO_URL = Config.UPSTREAM_REPO
 
@@ -76,7 +75,6 @@ SUDO_LIST = {}
 # for later purposes
 INT_PLUG = ""
 LOAD_PLUG = {}
-
 # Variables
 BOTLOG = Config.BOTLOG
 BOTLOG_CHATID = Config.BOTLOG_CHATID
