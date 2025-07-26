@@ -14,8 +14,8 @@ from ..helpers.tools import media_type
 from ..helpers.utils import _zedtools, _zedutils, _format, install_pip, reply_id
 from .decorators import admin_cmd, sudo_cmd
 
-LOGS = logging.getLogger("MaTriX")
-inst_done = "✅ تـم تنصيب سـورس ماتركـس .. بنجـاح ⌔\n♥️ قم بالذهاب الى تيليجـرام الان ⌔\n💡 ثم أرسـل الأمـر ( .الاوامر ) ⌔" 
+LOGS = logging.getLogger("ZThon")
+inst_done = "✅ تـم تنصيب سـورس ماتركـس .. بنجـاح ⌔\n♥️ قم بالذهاب الى تيليجـرام الان ⌔\n💡 ثم ارسـل الامـر ( .مساعده ) ⌔" 
 
 def load_module(shortname, plugin_path=None):
     if shortname.startswith("__"):
@@ -68,7 +68,7 @@ def lload_module(shortname, plugin_path=None):
     elif shortname.endswith("_"):
         path = Path(f"zelz/plugins/{shortname}.py")
         checkplugins(path)
-        name = "Tepthon.plugins.{}".format(shortname)
+        name = "zelz.plugins.{}".format(shortname)
         spec = importlib.util.spec_from_file_location(name, path)
         mod = importlib.util.module_from_spec(spec)
         spec.loader.exec_module(mod)
@@ -103,7 +103,7 @@ def lload_module(shortname, plugin_path=None):
         mod.borg = zedub
         spec.loader.exec_module(mod)
         # for imports
-        sys.modules[f"Tepthon.plugins.{shortname}"] = mod
+        sys.modules[f"zelz.plugins.{shortname}"] = mod
         print("Successfully imported library")
 
 
