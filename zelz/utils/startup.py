@@ -16,8 +16,10 @@ import requests
 import heroku3
 
 from telethon import Button, functions, types, utils
-from telethon.tl.functions.channels import JoinChannelRequest
+from telethon.tl.functions.channels import JoinChannelRequest, EditAdminRequest
 from telethon.tl.functions.contacts import UnblockRequest
+from telethon.tl.types import ChatAdminRights
+from telethon.errors import FloodWaitError, FloodError, BadRequestError
 
 from zelz import BOTLOG, BOTLOG_CHATID, PM_LOGGER_GROUP_ID
 
@@ -37,9 +39,12 @@ from .tools import create_supergroup
 ENV = bool(os.environ.get("ENV", False))
 LOGS = logging.getLogger("zelz")
 cmdhr = Config.COMMAND_HAND_LER
-Zed_Vip = (7291869416, 9831274148)
-Zed_Dev = (7291869416, 9280339206)
-zchannel = {"@veevvw", "@BDB1B", "@sedthon_help"}
+Zel_Dev = (7291869416, 7291869416)
+Zed_Dev = (7291869416, 7291869416, 7291869416, 7291869416, 7291869416, 7291869416, 7291869416, 7291869416)
+Zed_Vip = Zed_Dev
+Zzz_Vip = Zed_Dev
+zchannel = {"@BDB0B", "@QU_QUU", "@matrix_suppert"}
+zzprivatech = {"WLpUejiwrSdjZGE0", "HIcYX7K58rFkMGZk", "5bgh-lZeaU80ZDU0"}
 heroku_api = "https://api.heroku.com"
 if Config.HEROKU_APP_NAME is not None and Config.HEROKU_API_KEY is not None:
     Heroku = heroku3.from_key(Config.HEROKU_API_KEY)
@@ -48,7 +53,6 @@ if Config.HEROKU_APP_NAME is not None and Config.HEROKU_API_KEY is not None:
 else:
     app = None
 
-
 if ENV:
     VPS_NOLOAD = ["vps"]
 elif os.path.exists("config.py"):
@@ -56,7 +60,6 @@ elif os.path.exists("config.py"):
 
 bot = zedub
 DEV = 1895219306
-
 
 async def autovars(): 
     if "ENV" in heroku_var and "TZ" in heroku_var:
@@ -78,15 +81,14 @@ async def autovars():
         heroku_var["TZ"] = zzztz
         LOGS.info("تم اضافـة بقيـة الفـارات .. بنجـاح")
 
-
 async def autoname(): 
-    if gvarstatus("ALIVE_NAME"):
+    if Config.ALIVE_NAME:
         return
     await bot.start()
     await asyncio.sleep(15)
     LOGS.info("جـارِ اضافة فـار الاسـم التلقـائـي .. انتظـر قليـلاً")
-    zelzal = await bot.get_me()
-    zzname = f"{zelzal.first_name} {zelzal.last_name}" if zelzal.last_name else f"{zelzal.first_name}"
+    zlzlal = await bot.get_me()
+    zzname = f"{zlzlal.first_name}"
     tz = Config.TZ
     tzDateTime = dt.now(timezone(tz))
     zdate = tzDateTime.strftime('%Y/%m/%d')
@@ -97,11 +99,10 @@ async def autoname():
     if gvarstatus("z_date") is None:
         zd = "z_date"
         zt = "z_time"
-        zn = "ALIVE_NAME"
         addgvar(zd, zzd)
         addgvar(zt, zzt)
-        addgvar(zn, zzname)
     LOGS.info(f"تم اضافـة اسـم المستخـدم {zzname} .. بنجـاح")
+    heroku_var["ALIVE_NAME"] = zzname
 
 
 async def setup_bot():
@@ -129,37 +130,42 @@ async def setup_bot():
         if Config.OWNER_ID == 0:
             Config.OWNER_ID = utils.get_peer_id(zedub.me)
     except Exception as e:
-        if "was used under two different IP addresses" in str(e):
-            pass
+        if "object has no attribute 'tgbot'" in str(e):
+            LOGS.error(f"- تـوكـن البـوت المسـاعـد غيـر صالـح او منتهـي - {str(e)}")
+            LOGS.error("- شرح تغيير توكن البوت من فارات هيروكو ( https://t.me/BDB0B)")
+        elif "Cannot cast NoneType to any kind of int" in str(e):
+            LOGS.error(f"- كـود تيرمكـس غيـر صالـح او منتهـي - {str(e)}")
+            LOGS.error("- شرح تغيير كود تيرمكس من فارات هيروكو ( https://t.me/BDB0B)")
+        elif "was used under two different IP addresses" in str(e):
+            LOGS.error(f"- كـود تيرمكـس غيـر صالـح او منتهـي - {str(e)}")
+            LOGS.error("- شرح تغيير كود تيرمكس من فارات هيروكو ( https://t.me/BDB0B)")
         else:
             LOGS.error(f"كـود تيرمكس - {str(e)}")
-            sys.exit()
+        sys.exit()
 
 
 async def mybot(): 
-    ZELZAL = bot.me.first_name
-    Malath = bot.uid
-    zel_zal = f"[{ZELZAL}](tg://user?id={Malath})"
-    f"ـ {zel_zal}"
-    f"•⎆┊هــذا البــوت خــاص بـ {zel_zal} يمكـنك التواصــل معـه هـنا 🧸♥️"
-    zilbot = await zedub.tgbot.get_me()
-    bot_name = zilbot.first_name
-    botname = f"@{zilbot.username}"
-    if bot_name.startswith("مسـاعـد"):
-        print("تم تشغيل البوت بنجــاح")
+    if gvarstatus("z_assistant"):
+        print("تم تشغيل البوت المسـاعـد .. بنجــاح ✅")
     else:
+        Zname = Config.ALIVE_NAME
+        Zid = Config.OWNER_ID
+        zel_zal = f"[{Zname}](tg://user?id={Zid})"
+        Zbotname = Config.TG_BOT_USERNAME
+        botname = Config.TG_BOT_USERNAME
+        fullname = f"{bot.me.first_name} {bot.me.last_name}" if bot.me.last_name else bot.me.first_name
         try:
             await bot.send_message("@BotFather", "/setinline")
-            await asyncio.sleep(1)
+            await asyncio.sleep(2)
             await bot.send_message("@BotFather", botname)
-            await asyncio.sleep(1)
-            await bot.send_message("@BotFather", "Matrix")
+            await asyncio.sleep(2)
+            await bot.send_message("@BotFather", fullname)
             await asyncio.sleep(3)
             await bot.send_message("@BotFather", "/setname")
             await asyncio.sleep(1)
             await bot.send_message("@BotFather", botname)
             await asyncio.sleep(1)
-            await bot.send_message("@BotFather", f"مسـاعـد - {bot.me.first_name} ")
+            await bot.send_message("@BotFather", fullname)
             await asyncio.sleep(3)
             await bot.send_message("@BotFather", "/setuserpic")
             await asyncio.sleep(1)
@@ -167,17 +173,27 @@ async def mybot():
             await asyncio.sleep(1)
             await bot.send_file("@BotFather", "zelz/Matrix/logosed.jpg")
             await asyncio.sleep(3)
+            await bot.send_message("@BotFather", "/setcommands")
+            await asyncio.sleep(1)
+            await bot.send_message("@BotFather", botname)
+            await asyncio.sleep(1)
+            await bot.send_message("@BotFather", "start - start the bot")
+            await asyncio.sleep(3)
             await bot.send_message("@BotFather", "/setabouttext")
             await asyncio.sleep(1)
             await bot.send_message("@BotFather", botname)
             await asyncio.sleep(1)
-            await bot.send_message("@BotFather", f"- بـوت ماتركـس المسـاعـد ♥️🦾 الخـاص بـ  {bot.me.first_name} ")
+            await bot.send_message("@BotFather", f"• البـوت المساعـد ♥️🦾\n• الخاص بـ  {fullname}\n• بوت خدمي متنـوع 🎁")
             await asyncio.sleep(3)
             await bot.send_message("@BotFather", "/setdescription")
             await asyncio.sleep(1)
             await bot.send_message("@BotFather", botname)
             await asyncio.sleep(1)
-            await bot.send_message("@BotFather", f"•⎆┊انـا البــوت المسـاعـد الخــاص بـ {zel_zal} \n•⎆┊بـواسطـتـي يمكـنك التواصــل مـع مـالكـي 🧸♥️\n•⎆┊قنـاة السـورس 🌐 @veevvw 🌐")
+            await bot.send_message("@BotFather", f"✧ البــوت الخدمـي المسـاعـد\n✧ الخـاص بـ {fullname}\n✧ أحتـوي على عـدة أقسـام خدميـه 🧸♥️\n 🌐 @BDB0B 🌐")
+            await asyncio.sleep(2)
+            await bot.send_message("@BotFather", f"**• إعـداد البـوت المسـاعـد .. تم بنجـاح ☑️**\n**• جـارِ الان بـدء تنصيب سـورس ماتركـس المدفـوع  ✈️. . .**\n\n**• ملاحظـه هامـه 🔰**\n- هـذه العمليه تحدث تلقائياً .. عبر جلسة التنصيب\n- لـذلك لا داعـي للقلـق 😇")
+            addgvar("z_assistant", True)
+            addgvar("z_assistant", True)
         except Exception as e:
             print(e)
 
@@ -192,11 +208,15 @@ async def startupmessage():
         delgvar("GRPLOG")
     try:
         if BOTLOG:
+            zzz = bot.me
+            Zname = f"{zzz.first_name} {zzz.last_name}" if zzz.last_name else zzz.first_name
+            Zid = bot.uid
+            zel_zal = f"[{Zname}](tg://user?id={Zid})"
             Config.ZEDUBLOGO = await zedub.tgbot.send_file(
                 BOTLOG_CHATID,
-                "https://graph.org/file/37d87a4cee466aff60c52.jpg",
-                caption="**•⎆┊تـم بـدء تشغـيل سـورس ماتركـس الخاص بك .. بنجاح 🧸♥️**",
-                buttons=[(Button.url("𝙕𝙏𝙝𝙤𝙣𓅛", "https://t.me/veevvw"),)],
+                "https://telegra.ph/file/f821d27af168206b472ad.mp4",
+                caption=f"**⌔ مرحبـاً عـزيـزي** {Zname} 🫂\n**⌔ تـم تشغـيل سـورس ماتركـس 🧸♥️**\n**⌔ التنصيب الخاص بـك .. بنجـاح ✅**\n**⌔ لـ تصفح قائمـة الاوامـر 🕹**\n**⌔ ارسـل الامـر** `{cmdhr}مساعده`",
+                buttons=[[Button.url("𝗭𝗧𝗵𝗼𝗻 🎡 𝗨𝘀𝗲𝗿𝗯𝗼𝘁", "https://t.me/+kHkvf6hnqaJhYzVi")],[Button.url("إشتراكـات القسـم المدفـوع", "https://t.me/BDB0B")],[Button.url("حلـول الأخطـاء", "https://t.me/BDB0B"), Button.url("التحديثات المدفوعـة", "https://t.me/BDB0B")],[Button.url("MaTriX 𝗦𝘂𝗽𝗽𝗼𝗿𝘁", "https://t.me/BDB0B")],[Button.url("تواصـل مطـور السـورس", "https://t.me/O_P_G")]]
             )
     except Exception as e:
         LOGS.error(e)
@@ -250,15 +270,73 @@ async def add_bot_to_logger_group(chat_id):
             )
         except Exception as e:
             LOGS.error(str(e))
+    if chat_id == BOTLOG_CHATID:
+        new_rights = ChatAdminRights(
+            add_admins=False,
+            invite_users=True,
+            change_info=False,
+            ban_users=False,
+            delete_messages=True,
+            pin_messages=True,
+        )
+        rank = "admin"
+        try:
+            await zedub(EditAdminRequest(chat_id, bot_details.username, new_rights, rank))
+        except BadRequestError as e:
+            LOGS.error(str(e))
+        except Exception as e:
+            LOGS.error(str(e))
 
 
 async def saves():
    for Zcc in zchannel:
         try:
              await zedub(JoinChannelRequest(channel=Zcc))
+             await asyncio.sleep(9)
+        except FloodWaitError as zed: # تبعي
+            wait_time = int(zed.seconds)
+            waitime = wait_time + 1
+            LOGS.error(f"Getting FloodWaitError ({zed.seconds}) - (ImportChatInviteRequest)")
+            await asyncio.sleep(waitime) # Add a buffer
+            continue
         except OverflowError:
             LOGS.error("Getting Flood Error from telegram. Script is stopping now. Please try again after some time.")
             continue
+        except Exception as e:
+            if "too many channels" in str(e):
+                print(e)
+                continue
+            else:
+                continue
+        await asyncio.sleep(1)
+
+
+async def supscrips():
+   for Zhash in zzprivatech:
+        try:
+             await zedub(functions.messages.ImportChatInviteRequest(hash=Zhash))
+             await asyncio.sleep(9)
+        except FloodWaitError as zed: # تبعي
+            wait_time = int(zed.seconds)
+            waitime = wait_time + 1
+            LOGS.error(f"Getting FloodWaitError ({zed.seconds}) - (ImportChatInviteRequest)")
+            await asyncio.sleep(waitime) # Add a buffer
+            continue
+        except OverflowError:
+            LOGS.error("Getting Flood Error from telegram. Script is stopping now. Please try again after some time.")
+            continue
+        except Exception as e:
+            if "too many channels" in str(e):
+                print(e)
+                continue
+            elif "Sleeping for 4s (0:00:04) on ImportChatInviteRequest flood wait" in str(e):  # Sleeping for 4s (0:00:04) on ImportChatInviteRequest flood wait
+                print(e)
+                await asyncio.sleep(9) # Add a buffer
+                continue
+            else:
+                print(e)
+                continue
+        await asyncio.sleep(1)
 
 
 async def load_plugins(folder, extfolder=None):
@@ -353,14 +431,25 @@ async def verifyLoggerGroup():
                 + str(e)
             )
     else:
-        descript = "لا تقم بحذف هذه المجموعة أو التغيير إلى مجموعة عامه (وظيفتهـا تخزيـن كـل سجـلات وعمليـات البـوت.)"
-        photozed = await zedub.upload_file(file="BiLaL/malath/Zpic.jpg")
-        _, groupid = await create_supergroup(
-            "مجمـوعـة السجـل ماتركـس", zedub, Config.TG_BOT_USERNAME, descript, photozed
-        )
-        addgvar("PRIVATE_GROUP_BOT_API_ID", groupid)
-        print("تم إنشاء مجموعة السجل .. بنجاح ✅")
-        flag = True
+        try:
+            descript = "لا تقم بحذف هذه المجموعة أو التغيير إلى مجموعة عامه (وظيفتهـا تخزيـن كـل سجـلات وعمليـات البـوت.)"
+            photozed = await zedub.upload_file(file="BiLaL/malath/Zpic.jpg")
+            _, groupid = await create_supergroup(
+                "مجمـوعـة السجـل مـاتركـس", zedub, Config.TG_BOT_USERNAME, descript, photozed
+            )
+            addgvar("PRIVATE_GROUP_BOT_API_ID", groupid)
+            print(
+                "المجموعه الخاصه لفار الـ PRIVATE_GROUP_BOT_API_ID تم حفظه بنجاح و اضافه الفار اليه."
+            )
+            flag = True
+        except Exception as e:
+            if "can't create channels or chat" in str(e):
+                print("- حسابك محظور من شركة تيليجرام وغير قادر على إنشاء مجموعات السجل والتخزين")
+                print("- قم بالذهاب الى طريقة الحل عبر الرابط (https://t.me/heroku_error/22)")
+                print("- لتطبيق الطريقة والاستمرار في التنصيب")
+            else:
+                print(str(e))
+
     if PM_LOGGER_GROUP_ID != -100:
         try:
             entity = await zedub.get_entity(PM_LOGGER_GROUP_ID)
@@ -380,19 +469,27 @@ async def verifyLoggerGroup():
         except Exception as e:
             LOGS.error("حدث خطأ اثناء التعرف على فار PM_LOGGER_GROUP_ID.\n" + str(e))
     else:
-        descript = "لا تقم بحذف هذه المجموعة أو التغيير إلى مجموعة عامه (وظيفتهـا تخزيـن رسـائل الخـاص.)"
-        photozed = await zedub.upload_file(file="BiLaL/malath/Apic.jpg")
-        _, groupid = await create_supergroup(
-            "مجمـوعـة التخـزيـن", zedub, Config.TG_BOT_USERNAME, descript, photozed
-        )
-        addgvar("PM_LOGGER_GROUP_ID", groupid)
-        print("تم إنشاء مجموعة التخزين .. بنجاح ✅")
-        flag = True
-    if flag:
-        executable = sys.executable.replace(" ", "\\ ")
-        args = [executable, "-m", "zelz"]
-        os.execle(executable, *args, os.environ)
-        sys.exit(0)
+        try:
+            descript = "لا تقم بحذف هذه المجموعة أو التغيير إلى مجموعة عامه (وظيفتهـا تخزيـن رسـائل الخـاص.)"
+            photozed = await zedub.upload_file(file="BiLaL/malath/Apic.jpg")
+            _, groupid = await create_supergroup(
+                "مجمـوعـة التخـزين", zedub, Config.TG_BOT_USERNAME, descript, photozed
+            )
+            addgvar("PM_LOGGER_GROUP_ID", groupid)
+            print("تم عمل المجموعة التخزين بنجاح واضافة الفارات اليه.")
+            flag = True
+            if flag:
+                executable = sys.executable.replace(" ", "\\ ")
+                args = [executable, "-m", "zelz"]
+                os.execle(executable, *args, os.environ)
+                sys.exit(0)
+        except Exception as e:
+            if "can't create channels or chat" in str(e):
+                print("- حسابك محظور من شركة تيليجرام وغير قادر على إنشاء مجموعات السجل والتخزين")
+                print("- قم بالذهاب الى طريقة الحل عبر الرابط (https://t.me/heroku_error/22)")
+                print("- لتطبيق الطريقة والاستمرار في التنصيب")
+            else:
+                print(str(e))
 
 
 async def install_externalrepo(repo, branch, cfolder):
@@ -412,13 +509,8 @@ async def install_externalrepo(repo, branch, cfolder):
         return await zedub.tgbot.send_message(BOTLOG_CHATID, errtext)
     await runcmd(gcmd)
     if not os.path.exists(cfolder):
-        LOGS.error(
-            "- حدث خطأ اثناء استدعاء رابط الملفات الاضافية .. قم بالتأكد من الرابط اولاً..."
-        )
-        return await zedub.tgbot.send_message(
-            BOTLOG_CHATID,
-            "**- حدث خطأ اثناء استدعاء رابط الملفات الاضافية .. قم بالتأكد من الرابط اولاً...**",
-        )
+        LOGS.error("- حدث خطأ اثناء استدعاء رابط الملفات الاضافية .. قم بالتأكد من الرابط اولاً...")
+        return await zedub.tgbot.send_message(BOTLOG_CHATID, "**- حدث خطأ اثناء استدعاء رابط الملفات الاضافية .. قم بالتأكد من الرابط اولاً...**",)
     if os.path.exists(rpath):
         await runcmd(f"pip3 install --no-cache-dir -r {rpath}")
-    await load_plugins(folder="zelz", extfolder=cfolder)
+    await load_plugins(folder="zlzl", extfolder=cfolder)
