@@ -513,4 +513,4 @@ async def install_externalrepo(repo, branch, cfolder):
         return await zedub.tgbot.send_message(BOTLOG_CHATID, "**- حدث خطأ اثناء استدعاء رابط الملفات الاضافية .. قم بالتأكد من الرابط اولاً...**",)
     if os.path.exists(rpath):
         await runcmd(f"pip3 install --no-cache-dir -r {rpath}")
-    await load_plugins(folder="zlzl", extfolder=cfolder)
+    await load_plugins(folder="zelz", extfolder=cfolder)
