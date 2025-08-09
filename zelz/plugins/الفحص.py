@@ -26,13 +26,13 @@ STATS = gvarstatus("Z_STATS") or "فحص"
 
 
 @zedub.zed_cmd(pattern=f"{STATS}$")
-async def zed_alive(event):
+async def amireallyalive(event):
     reply_to_id = await reply_id(event)
     uptime = await get_readable_time((time.time() - StartTime))
     boot_time_timestamp = psutil.boot_time()
     bt = datetime.fromtimestamp(boot_time_timestamp)
     start = datetime.now()
-    zedevent = await edit_or_reply(event, "**⎆┊جـاري .. فحـص البـوت الخـاص بك**")
+    zedevent = await edit_or_reply(event, "**يتِم فحـص تنصيبـك لـ  Mtrix 𔘓  . .**")
     end = datetime.now()
     ms = (end - start).microseconds / 1000
     _, check_sgnirts = check_data_base_heal_th()
@@ -42,23 +42,18 @@ async def zed_alive(event):
         zedda = f"{zzd}┊{zzt}"
     else:
         zedda = f"{bt.year}/{bt.month}/{bt.day}"
-    Z_EMOJI = gvarstatus("ALIVE_EMOJI") or "✥┊"
-    ALIVE_TEXT = gvarstatus("ALIVE_TEXT") or "** بـوت  ماتركـس 𝙈𝙖𝙏𝙍𝙞𝙭 ⌁  يعمـل .. بنجـاح ☑️ 𓆩 **"
+    Z_EMOJI = gvarstatus("ALIVE_EMOJI") or "✾╿"
+    ALIVE_TEXT = gvarstatus("ALIVE_TEXT") or "**بـوت  ماتركـس 𝙈𝙖𝙏𝙍𝙞𝙭 ⌁  يعمـل .. بنجـاح ☑️ 𓆩**"
     ZED_IMG = gvarstatus("ALIVE_PIC")
-    USERID = zedub.uid if Config.OWNER_ID == 0 else Config.OWNER_ID
-    ALIVE_NAME = gvarstatus("ALIVE_NAME") if gvarstatus("ALIVE_NAME") else "-"
-    mention = f"[{ALIVE_NAME}](tg://user?id={USERID})"
     zed_caption = gvarstatus("ALIVE_TEMPLATE") or zed_temp
     caption = zed_caption.format(
         ALIVE_TEXT=ALIVE_TEXT,
         Z_EMOJI=Z_EMOJI,
         mention=mention,
         uptime=uptime,
-        zedda=zzd,
-        zzd=zzd,
-        zzt=zzt,
+        zedda=zedda,
         telever=version.__version__,
-        zdver=zedversion,
+        zdver=tepversion,
         pyver=python_version(),
         dbhealth=check_sgnirts,
         ping=ms,
