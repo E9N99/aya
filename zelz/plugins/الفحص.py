@@ -32,7 +32,7 @@ async def amireallyalive(event):
     boot_time_timestamp = psutil.boot_time()
     bt = datetime.fromtimestamp(boot_time_timestamp)
     start = datetime.now()
-    zedevent = await edit_or_reply(event, "**يتِم فحـص تنصيبـك لـ  Mtrix 𔘓  . .**")
+    zedevent = await edit_or_reply(event, "**⎆┊جـاري .. فحـص البـوت الخـاص بك**")
     end = datetime.now()
     ms = (end - start).microseconds / 1000
     _, check_sgnirts = check_data_base_heal_th()
@@ -53,7 +53,7 @@ async def amireallyalive(event):
         uptime=uptime,
         zedda=zedda,
         telever=version.__version__,
-        zdver=tepversion,
+        zdver=zedversion,
         pyver=python_version(),
         dbhealth=check_sgnirts,
         ping=ms,
