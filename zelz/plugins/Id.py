@@ -3,7 +3,7 @@ import contextlib
 import re
 import html
 import shutil
-import os
+import o
 import base64
 import requests
 from requests import get
@@ -42,7 +42,7 @@ ZED_BLACKLIST = [
 async def get_user_from_event(event):
     if event.reply_to_msg_id:
         previous_message = await event.get_reply_message()
-        user_object = await event.client.get_entity(previous_message.sender_id)
+        user_object = await.get_entity(previous_message.sender_id)
     else:
         user = event.pattern_match.group(1)
         if user.isnumeric():
@@ -104,7 +104,7 @@ async def zzz_info(zthon_user, event):
 ################# Dev ZilZal #################
     ZThon = f'<a href="T.me/veevvw">ᯓ 𝙈𝙖𝙏𝙍𝙞𝙭 ⌁ 𝗧𝗲𝗹𝗲𝗴𝗿𝗮𝗺 𝗗𝗮𝘁𝗮 📟</a>'
     ZThon += f"\n<b>⋆─┄─┄─┄─┄─┄─┄─⋆</b>\n\n"
-    ZThon += f"<b>• معلومـات إنشـاء حسـاب تيليجـرام 📑 :</b>\n"
+    aia += f"<b>• معلومـات إنشـاء حسـاب تيليجـرام 📑 :</b>\n"
     ZThon += f"<b>- الاسـم    ⤎ </b> "
     ZThon += f'<a href="tg://user?id={user_id}">{full_name}</a>'
     ZThon += f"\n<b>- الايــدي   ⤎ </b> <code>{user_id}</code>"
@@ -120,7 +120,7 @@ async def fetch_info(replied_user, event):
     replied_user_profile_photos = await event.client(
         GetUserPhotosRequest(user_id=replied_user.id, offset=42, max_id=0, limit=80)
     )
-    replied_user_profile_photos_count = "لا يـوجـد بروفـايـل"
+    replied_user_profile_photos_count = "لا يـوجـد بروفـايـل
     dc_id = "Can't get dc id"
     with contextlib.suppress(AttributeError):
         replied_user_profile_photos_count = replied_user_profile_photos.count
