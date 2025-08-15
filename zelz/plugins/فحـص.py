@@ -37,7 +37,7 @@ from . import BOTLOG, BOTLOG_CHATID, mention
 
 Zel_Uid = zedub.uid
 zed_dev = (7291869416, 7291869416)
-Zed_Vvv = (7291869416, 7291869416)
+Zed_Vvv = (6806861615, 7291869416)
 LOGS = logging.getLogger(__name__)
 vocself = True
 HEROKU_APP_NAME = Config.HEROKU_APP_NAME
