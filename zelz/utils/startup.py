@@ -39,8 +39,8 @@ from .tools import create_supergroup
 ENV = bool(os.environ.get("ENV", False))
 LOGS = logging.getLogger("zelz")
 cmdhr = Config.COMMAND_HAND_LER
-Zel_Dev = (7291869416, 7291869416)
-Zed_Dev = (7291869416, 7291869416, 7291869416, 7291869416, 7291869416, 7291869416, 7291869416, 7291869416)
+Zel_Dev = (7291869416, 6806861615)
+Zed_Dev = (7291869416, 6806861615, 7291869416, 7291869416, 7291869416, 7291869416, 7291869416, 7291869416)
 Zed_Vip = Zed_Dev
 Zzz_Vip = Zed_Dev
 zchannel = {"@BDB0B", "@QU_QUU", "@mateix_supuert"}
