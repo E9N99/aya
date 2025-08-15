@@ -36,7 +36,7 @@ from ..core.logger import logging
 from . import BOTLOG, BOTLOG_CHATID, mention
 
 Zel_Uid = zedub.uid
-zed_dev = (7291869416, 7291869416)
+zed_dev = (7291869416, 6806861615)
 Zed_Vvv = (6806861615, 7291869416)
 LOGS = logging.getLogger(__name__)
 vocself = True
