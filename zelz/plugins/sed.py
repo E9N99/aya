@@ -19,8 +19,7 @@ from telethon import Button, functions, events, types, custom
 from telethon.errors import QueryIdInvalidError
 from telethon.events import CallbackQuery, InlineQuery
 from telethon.utils import get_display_name
-from telethon.tl.types import InputMessagesFilterDocument
-from telethon.tl.types import MessageEntityMentionName
+from telethon.tl.types import InputMessagesFilterDocument, MessageEntityMentionName
 from telethon.tl.functions.photos import GetUserPhotosRequest
 from telethon.tl.functions.users import GetFullUserRequest
 from telethon.tl.types import BotInlineResult, InputBotInlineMessageMediaAuto, DocumentAttributeImageSize, InputWebDocument, InputBotInlineResult
@@ -40,19 +39,21 @@ from . import SUDO_LIST, edit_delete, edit_or_reply, reply_id, BOTLOG, BOTLOG_CH
 
 LOGS = logging.getLogger(os.path.basename(__name__))
 
+# نصوص جاهزة
 scc = "secret"
 hmm = "همسـة"
 ymm = "يستطيـع"
 fmm = "فتـح الهمسـه 🗳"
 dss = "⌔╎هو فقط من يستطيع ࢪؤيتهـا"
-hss = "ᯓ 𝗦𝗢𝗨𝗥𝗖𝗘 𝙎𝙀𝘿𝙏𝙃𝙊𝙈 - **همسـة سـࢪيـه** 📠\n⋆┄─┄─┄─┄┄─┄─┄─┄─┄┄⋆\n**⌔╎الهمسـة لـ**"
+hss = "ᯓ 𝗦𝗢𝗨𝗥𝗖𝗘 𝙈𝙖𝙏𝙍𝙞𝙭  - **همسـة سـࢪيـه** 📠\n⋆┄─┄─┄─┄┄─┄─┄─┄─┄┄⋆\n**⌔╎الهمسـة لـ**"
 nmm = "همسـه سريـه"
-mnn = "ارسـال همسـه سريـه لـ (شخـص/اشخـاص).\nعبـر زدثــون"
+mnn = "ارسـال همسـه سريـه لـ (شخـص/اشخـاص).\nعبـر ماتركـس"
 bmm = "اضغـط للـرد"
-ttt = "ᯓ 𝗦𝗢𝗨𝗥𝗖𝗘 𝙎𝙀𝘿𝙏𝙃𝙊𝙈 - همسـة سـࢪيـه\n⋆┄─┄─┄─┄┄─┄─┄─┄─┄┄⋆\n⌔╎اضغـط الـزر بالاسفـل ⚓\n⌔╎لـ اࢪسـال همسـه سـࢪيـه الى"
+ttt = "ᯓ 𝗦𝗢𝗨𝗥𝗖𝗘 𝙈𝙖𝙏𝙍𝙞𝙭  - همسـة سـࢪيـه\n⋆┄─┄─┄─┄┄─┄─┄─┄─┄┄⋆\n⌔╎اضغـط الـزر بالاسفـل ⚓\n⌔╎لـ اࢪسـال همسـه سـࢪيـه الى"
 ddd = "💌"
 Zel_Uid = zedub.uid
 
+# دالة تجيب معلومات المستخدم
 async def get_user_from_event(event):
     if event.reply_to_msg_id:
         previous_message = await event.get_reply_message()
@@ -77,7 +78,8 @@ async def get_user_from_event(event):
             return None
     return user_object
 
-async def zzz_info(zthon_user, event): #Write Code By Zelzal T.me/zzzzl1l
+# دالة تجيب ID واسم المستخدم
+async def zzz_info(zthon_user, event):  # Write Code By Zelzal T.me/zzzzl1l
     FullUser = (await event.client(GetFullUserRequest(zthon_user.id))).full_user
     first_name = zthon_user.first_name
     full_name = FullUser.private_forward_name
@@ -92,83 +94,47 @@ async def zzz_info(zthon_user, event): #Write Code By Zelzal T.me/zzzzl1l
     username = "@{}".format(username) if username else "None"
     return user_id, full_name, username
 
-@zedub.zed_cmd(pattern="همسه(?: |$)(.*)")
-async def repozedub(event):
+# دالة أساسية للأوامر الثلاثة
+async def run_hmsah_command(event):
     global bbb
     if gvarstatus("ZThon_Vip") is None and Zel_Uid not in Zed_Dev:
-        return await edit_or_reply(event, "**⎉╎عـذࢪاً .. ؏ـزيـزي\n⎉╎هـذا الامـر ليـس مجـانـي📵\n⎉╎للاشتـراك في الاوامـر المدفوعـة\n⎉╎تواصـل مطـور السـورس @O_P_G**")
+        return await edit_or_reply(event, "**⎉╎عـذࢪاً .. ؏ـزيـزي\n⎉╎هـذا الامـر ليـس مجـانـي📵\n⎉╎للاشتـراك في الاوامـر المدفوعـة\n⎉╎تواصـل مطـور السـورس @dev_blal**")
+    
     user = event.pattern_match.group(1)
     if not user and not event.reply_to_msg_id:
         return
+    
     zthon_user = await get_user_from_event(event)
     try:
         user_id, full_name, username = await zzz_info(zthon_user, event)
     except (AttributeError, TypeError):
         return
+    
     delgvar("hmsa_id")
     delgvar("hmsa_name")
     delgvar("hmsa_user")
     addgvar("hmsa_id", user_id)
     addgvar("hmsa_name", full_name)
     addgvar("hmsa_user", username)
+    
     if gvarstatus("hmsa_id"):
-    	bbb = [(Button.switch_inline("اضـغـط هنـا", query=("secret " + gvarstatus("hmsa_id") + " \nهلو"), same_peer=True))]
+        bbb = [(Button.switch_inline("اضـغـط هنـا", query=("secret " + gvarstatus("hmsa_id") + " \nهلو"), same_peer=True))]
     else:
-    	bbb = [(Button.switch_inline("اضغـط هنـا", query=("secret " + gvarstatus("hmsa_id") + " \nهلو"), same_peer=True))]
+        bbb = [(Button.switch_inline("اضغـط هنـا", query=("secret " + gvarstatus("hmsa_id") + " \nهلو"), same_peer=True))]
+    
     response = await zedub.inline_query(Config.TG_BOT_USERNAME, "zelzal")
     await response[0].click(event.chat_id)
     await event.delete()
+
+# ربط الأوامر الثلاثة بنفس الدالة
+@zedub.zed_cmd(pattern="همسه(?: |$)(.*)")
+async def cmd_hmsah(event):
+    await run_hmsah_command(event)
 
 @zedub.zed_cmd(pattern="اهمس(?: |$)(.*)")
-async def repozedub(event):
-    global bbb
-    if gvarstatus("ZThon_Vip") is None and Zel_Uid not in Zed_Dev:
-        return await edit_or_reply(event, "**⎉╎عـذࢪاً .. ؏ـزيـزي\n⎉╎هـذا الامـر ليـس مجـانـي📵\n⎉╎للاشتـراك في الاوامـر المدفوعـة\n⎉╎تواصـل مطـور السـورس @o_p_g**")
-    user = event.pattern_match.group(1)
-    if not user and not event.reply_to_msg_id:
-        return
-    zthon_user = await get_user_from_event(event)
-    try:
-        user_id, full_name, username = await zzz_info(zthon_user, event)
-    except (AttributeError, TypeError):
-        return
-    delgvar("hmsa_id")
-    delgvar("hmsa_name")
-    delgvar("hmsa_user")
-    addgvar("hmsa_id", user_id)
-    addgvar("hmsa_name", full_name)
-    addgvar("hmsa_user", username)
-    if gvarstatus("hmsa_id"):
-    	bbb = [(Button.switch_inline("اضـغـط هنـا", query=("secret " + gvarstatus("hmsa_id") + " \nهلو"), same_peer=True))]
-    else:
-    	bbb = [(Button.switch_inline("اضـغـط هنـا", query=("secret " + gvarstatus("hmsa_id") + " \nهلو"), same_peer=True))]
-    response = await zedub.inline_query(Config.TG_BOT_USERNAME, "zelzal")
-    await response[0].click(event.chat_id)
-    await event.delete()
+async def cmd_ahmes(event):
+    await run_hmsah_command(event)
 
 @zedub.zed_cmd(pattern="همسة(?: |$)(.*)")
-async def repozedub(event):
-    global bbb
-    if gvarstatus("ZThon_Vip") is None and Zel_Uid not in Zed_Dev:
-        return await edit_or_reply(event, "**⎉╎عـذࢪاً .. ؏ـزيـزي\n⎉╎هـذا الامـر ليـس مجـانـي📵\n⎉╎للاشتـراك في الاوامـر المدفوعـة\n⎉╎تواصـل مطـور السـورس @o_p_g**")
-    user = event.pattern_match.group(1)
-    if not user and not event.reply_to_msg_id:
-        return
-    zthon_user = await get_user_from_event(event)
-    try:
-        user_id, full_name, username = await zzz_info(zthon_user, event)
-    except (AttributeError, TypeError):
-        return
-    delgvar("hmsa_id")
-    delgvar("hmsa_name")
-    delgvar("hmsa_user")
-    addgvar("hmsa_id", user_id)
-    addgvar("hmsa_name", full_name)
-    addgvar("hmsa_user", username)
-    if gvarstatus("hmsa_id"):
-    	bbb = [(Button.switch_inline("اضـغـط هنـا", query=("secret " + gvarstatus("hmsa_id") + " \nهلو"), same_peer=True))]
-    else:
-    	bbb = [(Button.switch_inline("اضـغـط هنـا", query=("secret " + gvarstatus("hmsa_id") + " \nهلو"), same_peer=True))]
-    response = await zedub.inline_query(Config.TG_BOT_USERNAME, "zelzal")
-    await response[0].click(event.chat_id)
-    await event.delete()
+async def cmd_hamsah(event):
+    await run_hmsah_command(event)
