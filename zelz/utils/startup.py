@@ -35,7 +35,7 @@ from ..sql_helper.global_collection import (
 from ..sql_helper.globals import addgvar, delgvar, gvarstatus
 from .pluginmanager import load_module
 from .tools import create_supergroup
-
+heroku_var = os.getenv("heroku_var", "default_value_here")
 ENV = bool(os.environ.get("ENV", False))
 LOGS = logging.getLogger("zelz")
 cmdhr = Config.COMMAND_HAND_LER
