@@ -1303,3 +1303,26 @@ async def antif_on_msg(event):
         raise StopPropagation
     if user_id in FloodConfig.BANNED_USERS:
         FloodConfig.BANNED_USERS.remove(user_id)
+
+from telethon import events
+import random
+
+
+QUOTE_CHANNEL = "QuotesChannelUsername"  
+@zedub.bot.on(events.NewMessage(pattern="^/quote$"))
+async def quote_handler(event):
+    try:
+        
+        messages = await event.client.get_messages(QUOTE_CHANNEL, limit=50)
+
+        
+        quotes = [msg.text for msg in messages if msg.message]
+
+        if quotes:
+              
+            quote = random.choice(quotes)
+            await event.reply(f"💭 {quote}")
+        else:
+            await event.reply("❌ ماكو اقتباسات حالياً بالقناة.")
+    except Exception as e:
+        await event.reply(f"🚫 خطأ: {str(e)}")
