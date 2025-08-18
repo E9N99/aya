@@ -39,15 +39,14 @@ from .botmanagers import ban_user_from_bot
 
 from openai import OpenAI
 
-from . import Config, zedub  # نفس طريقة مشروعك
+from . import Config, zedub  
 
-# ===== إعدادات البوت =====
+
+
+
 botusername = Config.TG_BOT_USERNAME
-
-# ===== إعدادات OpenAI =====
 client_ai = OpenAI(api_key="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")
 
-# ===== قاعدة بيانات الجلسات =====
 DB_FILE = "chat_sessions.json"
 if os.path.exists(DB_FILE):
     with open(DB_FILE, "r") as f:
@@ -55,7 +54,7 @@ if os.path.exists(DB_FILE):
 else:
     sessions = {}
 
-SESSION_TIMEOUT = 300  # 5 دقائق
+SESSION_TIMEOUT = 300
 DEFAULT_MOOD = "رسمي"
 DEFAULT_PERSONA = "مساعد AI"
 
@@ -73,47 +72,24 @@ async def end_session(user_id, event=None):
         if event:
             await event.reply("✅ تم إنهاء الجلسة.")
 
-# ===== فتح جلسة جديدة =====
-@zedub.bot_cmd(
-    pattern=f"^/chat({botusername})?([\\s]+)?$",
-    incoming=True,
-    func=lambda e: e.is_private,
-)
+@zedub.bot_cmd(pattern=f"^/chat({botusername})?([\\s]+)?$", incoming=True, func=lambda e: e.is_private)
 async def start_chat(event):
     user_id = str(event.sender_id)
-    sessions[user_id] = {
-        "messages": [],
-        "mood": DEFAULT_MOOD,
-        "persona": DEFAULT_PERSONA,
-        "task": None
-    }
+    sessions[user_id] = {"messages": [], "mood": DEFAULT_MOOD, "persona": DEFAULT_PERSONA, "task": None}
     save_sessions()
-    await event.reply(
-        "🔮 هلا VIP! فتحتلك جلسة محادثة AI.\n"
-        "اكتب أي شي وراح أجاوبك.\n\n"
-        "استخدم:\n"
-        "/end → إنهاء الجلسة\n"
-        "/reset → مسح المحادثة\n"
-        "/mood [وصف] → تغيير أسلوب الرد\n"
-        "/persona [اسم الشخصية] → اختيار شخصية AI\n"
-        "/history → استرجاع آخر المحادثات"
-    )
-
+    await event.reply("🔮 هلا VIP! فتحتلك جلسة محادثة AI.\nاكتب أي شي وراح أجاوبك.\n\nاستخدم:\n/end → إنهاء الجلسة\n/reset → مسح المحادثة\n/mood [وصف] → تغيير أسلوب الرد\n/persona [اسم الشخصية] → اختيار شخصية AI\n/history → استرجاع آخر المحادثات")
     async def session_timer():
         await asyncio.sleep(SESSION_TIMEOUT)
         if user_id in sessions:
             await event.reply("⏰ انتهت الجلسة بسبب عدم النشاط.")
             await end_session(user_id)
-
     sessions[user_id]["task"] = asyncio.create_task(session_timer())
 
-# ===== إنهاء الجلسة =====
 @zedub.bot_cmd(pattern="^/end$", incoming=True)
 async def end_chat(event):
     user_id = str(event.sender_id)
     await end_session(user_id, event)
 
-# ===== إعادة ضبط المحادثة =====
 @zedub.bot_cmd(pattern="^/reset$", incoming=True)
 async def reset_chat(event):
     user_id = str(event.sender_id)
@@ -124,7 +100,6 @@ async def reset_chat(event):
     else:
         await event.reply("ماكو جلسة مفتوحة.")
 
-# ===== تغيير Mood =====
 @zedub.bot_cmd(pattern="^/mood (.+)", incoming=True)
 async def change_mood(event):
     user_id = str(event.sender_id)
@@ -136,7 +111,6 @@ async def change_mood(event):
     else:
         await event.reply("ماكو جلسة مفتوحة.")
 
-# ===== تغيير Persona =====
 @zedub.bot_cmd(pattern="^/persona (.+)", incoming=True)
 async def change_persona(event):
     user_id = str(event.sender_id)
@@ -148,7 +122,6 @@ async def change_persona(event):
     else:
         await event.reply("ماكو جلسة مفتوحة.")
 
-# ===== عرض التاريخ =====
 @zedub.bot_cmd(pattern="^/history$", incoming=True)
 async def show_history(event):
     user_id = str(event.sender_id)
@@ -162,17 +135,13 @@ async def show_history(event):
     else:
         await event.reply("ماكو جلسة مفتوحة.")
 
-# ===== الرد بالذكاء الاصطناعي =====
-@zedub.bot_cmd(incoming=True)
+@zedub.bot.on(events.NewMessage(incoming=True))
 async def chat_ai(event):
     user_id = str(event.sender_id)
     text = event.raw_text
-
-    if text.startswith("/"):
+    if text.startswith("/") or text.strip().startswith("#"):
         return
-
     if user_id in sessions:
-        # إعادة تشغيل التايمر
         if sessions[user_id]["task"]:
             sessions[user_id]["task"].cancel()
         async def session_timer():
@@ -181,30 +150,18 @@ async def chat_ai(event):
                 await event.reply("⏰ انتهت الجلسة بسبب عدم النشاط.")
                 await end_session(user_id)
         sessions[user_id]["task"] = asyncio.create_task(session_timer())
-
-        # إضافة الرسالة للسياق
         sessions[user_id]["messages"].append({"role": "user", "content": text})
-
-        # إعداد النظام لMood وPersona
         system_prompt = f"أنت {sessions[user_id]['persona']}، اكتب بأسلوب: {sessions[user_id]['mood']}"
         messages_for_ai = [{"role": "system", "content": system_prompt}] + sessions[user_id]["messages"]
-
         try:
-            response = client_ai.chat.completions.create(
-                model="gpt-3.5-turbo",
-                messages=messages_for_ai
-            )
+            response = client_ai.chat.completions.create(model="gpt-3.5-turbo", messages=messages_for_ai)
             reply_text = response.choices[0].message.content
             await event.reply(reply_text)
-
             sessions[user_id]["messages"].append({"role": "assistant", "content": reply_text})
             save_sessions()
-
-            # تحويل الرد لصوت TTS (اختياري)
             tts = gTTS(text=reply_text, lang='ar')
             tts.save("reply.mp3")
             await event.reply(file="reply.mp3")
             os.remove("reply.mp3")
-
         except Exception as e:
             await event.reply(f"⚠️ صار خطأ: {str(e)}")
