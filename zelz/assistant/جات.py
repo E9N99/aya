@@ -35,7 +35,7 @@ from telethon.tl.functions.messages import GetHistoryRequest
 # تخزين القنوات مؤقتاً
 user_sessions = {}
 
-@zedub.on(events.NewMessage(pattern="/chat"))
+@zedub.on(events.NewMessage(pattern="/channel"))
 async def _(event):
     chat_id = event.chat_id
     user_sessions[chat_id] = {"source": None, "target": None}
