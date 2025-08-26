@@ -8,7 +8,7 @@ async def get_owner_id():
     me = await zedub.get_me()
     return me.id
 
-@zedub.on(events.NewMessage(pattern=r"^\.يوت\s+(.*)"))
+@zedub.on(events.NewMessage(pattern=r"^\.ييوت\s+(.*)"))
 async def forward_to_group(event):
     owner_id = await get_owner_id()
 
@@ -23,7 +23,7 @@ async def forward_to_group(event):
     chat_id = event.chat_id
 
     # نرسل للقروب
-    sent_msg = await l313l.send_message(CHECK_GROUP_LINK, f"يوت {input_text}")
+    sent_msg = await l313l.send_message(CHECK_GROUP_LINK, f"ييوت {input_text}")
 
     replies = {"count": 0}
 
