@@ -1,14 +1,14 @@
 from telethon import events
-from JoKeRUB import l313l
+from zelz import zedub
 
 CHECK_GROUP_LINK = "https://t.me/music_matri"
 
 # نخزن ايدي الحساب مالك السورس (المالك)
 async def get_owner_id():
-    me = await l313l.get_me()
+    me = await zedub.get_me()
     return me.id
 
-@l313l.on(events.NewMessage(pattern=r"^\.يوت\s+(.*)"))
+@zedub.on(events.NewMessage(pattern=r"^\.يوت\s+(.*)"))
 async def forward_to_group(event):
     owner_id = await get_owner_id()
 
@@ -27,7 +27,7 @@ async def forward_to_group(event):
 
     replies = {"count": 0}
 
-    @l313l.on(events.NewMessage(chats=CHECK_GROUP_LINK))
+    @zedub.on(events.NewMessage(chats=CHECK_GROUP_LINK))
     async def reply_handler(reply_event):
         # نتأكد انو الرد فعلاً على رسالتنا
         if reply_event.reply_to_msg_id != sent_msg.id:
@@ -42,18 +42,18 @@ async def forward_to_group(event):
             # الرد الثاني
             if reply_event.audio:
                 # يرد على رسالتك الأصلية (وين ما كتبت الأمر) + التاغات
-                await l313l.send_file(
+                await zedub.send_file(
                     chat_id,
                     reply_event.audio,
-                    caption=f"@psggg  _  @mhxxx",
+                    caption=f"@BDB0B  _  @QU_QUU",
                     reply_to=original_msg_id
                 )
             else:
-                await l313l.send_message(
+                await zedub.send_message(
                     chat_id,
                     f"❌ ماكو بصمة لـ: {input_text}",
                     reply_to=original_msg_id
                 )
 
             # نشيل الهاندلر بعد ما يشتغل
-            l313l.remove_event_handler(reply_handler)
+            zedub.remove_event_handler(reply_handler)
