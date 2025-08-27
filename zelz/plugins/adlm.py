@@ -55,8 +55,8 @@ async def copy_channel_messages(event):
         channel_username = event.pattern_match.group(1)
         messages_to_copy = []
 
-    
-        async for post in zedub.client.iter_messages(channel_username, reverse=True):
+        
+        async for post in zedub.iter_messages(channel_username, reverse=True):
             if not (post.text or post.photo or post.video or post.document):
                 continue
             messages_to_copy.append(post)
@@ -87,7 +87,7 @@ async def copy_channel_messages(event):
                 })
 
                 count += 1
-                await asyncio.sleep(0.5) 
+                await asyncio.sleep(0.5)  
             except Exception:
                 continue
 
