@@ -54,21 +54,17 @@ import random
 import traceback
 from telethon import events
 
-# ملف تخزين الردود
 AUTO_REPLIES_FILE = "auto_replies.json"
 auto_replies = {}
 
-# تحميل الردود اذا موجود ملف
 if os.path.exists(AUTO_REPLIES_FILE):
     with open(AUTO_REPLIES_FILE, "r", encoding="utf-8") as f:
         auto_replies = json.load(f)
 
-# حفظ الردود
 def save_replies():
     with open(AUTO_REPLIES_FILE, "w", encoding="utf-8") as f:
         json.dump(auto_replies, f, ensure_ascii=False, indent=2)
 
-# امر التعليم
 @zedub.zed_cmd(pattern="^\.تعلم (.+?) الجواب (.+)$")
 async def learn_reply(event):
     try:
@@ -83,45 +79,40 @@ async def learn_reply(event):
         save_replies()
         await event.reply(f"✅ تم حفظ الرد!\n\nالكلمة: {keyword}\nالجواب: {reply_text}")
     except Exception as e:
-        error_text = traceback.format_exc()
-        print(f"\n❌ خطأ أثناء التعليم:\n{error_text}\n")
-        await event.reply(f"❌ صار خطأ:\n{str(e)}")
+        await event.reply(f"❌ خطأ: {str(e)}")
+        print(traceback.format_exc())
 
-# امر فحص الردود
-@zedub.zed_cmd(pattern="^\.شوف_الردود$")
-async def check_replies(event):
-    try:
-        await event.reply(str(auto_replies))
-    except Exception as e:
-        error_text = traceback.format_exc()
-        print(f"\n❌ خطأ أثناء عرض الردود:\n{error_text}\n")
-        await event.reply(f"❌ صار خطأ:\n{str(e)}")
-
-# الرد التلقائي
 @zedub.on(events.NewMessage(incoming=True))
 async def auto_reply(event):
     try:
+        # تجاهل رسائلي
         if event.sender_id == (await event.client.get_me()).id:
-            return  # تجاهل رسائلي
+            return  
 
         message_text = event.raw_text.lower()
-        print(f"\n📩 وصلت رسالة: {message_text}")  # لوغ للرسالة
 
-        for keyword, replies in auto_replies.items():
-            print(f"🔎 افحص الكلمة: {keyword}")  # لوغ للكلمات المخزونة
-            if keyword.lower() in message_text:
-                reply_text = random.choice(replies)
-                print(f"✅ تطابق! رح يرد: {reply_text}")
-                await event.reply(reply_text)
-                break
-        else:
-            print("❌ ماكو أي تطابق")  # لوغ اذا ما تطابق شي
+        # الشرط الأول: الرد بالخاص دائماً
+        if event.is_private:
+            for keyword, replies in auto_replies.items():
+                if keyword.lower() in message_text:
+                    reply_text = random.choice(replies)
+                    await event.reply(reply_text)
+                    break
+
+        # الشرط الثاني: الرد بالكروبات فقط إذا ردوا على رسالتي
+        elif event.is_group and event.is_reply:
+            reply_msg = await event.get_reply_message()
+            if reply_msg and reply_msg.sender_id == (await event.client.get_me()).id:
+                for keyword, replies in auto_replies.items():
+                    if keyword.lower() in message_text:
+                        reply_text = random.choice(replies)
+                        await event.reply(reply_text)
+                        break
 
     except Exception as e:
-        error_text = traceback.format_exc()
-        print(f"\n❌ خطأ أثناء الرد التلقائي:\n{error_text}\n")
+        print(f"\n❌ خطأ بالرد التلقائي:\n{traceback.format_exc()}\n")
         try:
-            await event.reply("⚠️ صار خطأ بالرد التلقائي، شوف اللوغ للسبب")
+            await event.reply("⚠️ صار خطأ بالرد التلقائي")
         except:
             pass
 
