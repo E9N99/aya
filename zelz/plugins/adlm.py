@@ -2,6 +2,7 @@ import re
 import os
 import typing
 import asyncio
+import random
 import json
 from pytz import timezone
 from random import choice
@@ -40,6 +41,120 @@ from ..core.logger import logging
 from ..core.managers import edit_or_reply, edit_delete
 from . import BOTLOG, BOTLOG_CHATID
 
+
+
+
+
+
+
+
+REPLIES_FILE = "auto_replies.json"
+
+# تحميل الردود من الملف أو إنشاء فارغ
+try:
+    with open(REPLIES_FILE, "r", encoding="utf-8") as f:
+        auto_replies = json.load(f)
+except FileNotFoundError:
+    auto_replies = {}
+
+def save_replies():
+    with open(REPLIES_FILE, "w", encoding="utf-8") as f:
+        json.dump(auto_replies, f, ensure_ascii=False, indent=4)
+
+# أمر تعليم جملة جديدة
+@zedub.zed_cmd(pattern=r"^\.تعلم (.+) الجواب (.+)")
+async def teach_sentence(event):
+    try:
+        keyword = event.pattern_match.group(1).strip().lower()
+        reply_text = event.pattern_match.group(2).strip()
+
+        # دعم الردود المتعددة لنفس الجملة
+        if keyword in auto_replies:
+            auto_replies[keyword].append(reply_text)
+        else:
+            auto_replies[keyword] = [reply_text]
+
+        save_replies()
+        await event.reply(f"✅ تم تعليم الجملة '{keyword}' مع الرد '{reply_text}'")
+    except Exception as e:
+        await event.reply(f"❌ حدث خطأ: {e}")
+
+# أمر تعديل الرد
+@zedub.zed_cmd(pattern=r"^\.تعديل (.+) الجواب (.+)")
+async def edit_sentence(event):
+    try:
+        keyword = event.pattern_match.group(1).strip().lower()
+        new_reply = event.pattern_match.group(2).strip()
+
+        if keyword in auto_replies:
+            auto_replies[keyword] = [new_reply]
+            save_replies()
+            await event.reply(f"✅ تم تعديل الرد للجملة '{keyword}' إلى '{new_reply}'")
+        else:
+            await event.reply(f"❌ هذه الجملة غير موجودة.")
+    except Exception as e:
+        await event.reply(f"❌ حدث خطأ: {e}")
+
+#  حذف جملة
+@zedub.zed_cmd(pattern=r"^\.مسح (.+)")
+async def delete_sentence(event):
+    try:
+        keyword = event.pattern_match.group(1).strip().lower()
+
+        if keyword in auto_replies:
+            del auto_replies[keyword]
+            save_replies()
+            await event.reply(f"✅ تم حذف الجملة '{keyword}'")
+        else:
+            await event.reply(f"❌ هذه الجملة غير موجودة.")
+    except Exception as e:
+        await event.reply(f"❌ حدث خطأ: {e}")
+
+# أمر عرض قائمة الجمل
+@zedub.zed_cmd(pattern=r"^\.قائمة الردود$")
+async def list_sentences(event):
+    try:
+        if auto_replies:
+            text = "**📜 قائمة الجمل والردود:**\n\n"
+            for k, v in auto_replies.items():
+                text += f"• {k} → {', '.join(v)}\n"
+            await event.reply(text)
+        else:
+            await event.reply("❌ لا توجد جمل محفوظة بعد.")
+    except Exception as e:
+        await event.reply(f"❌ حدث خطأ: {e}")
+
+# الرد التلقائي
+@zedub.zed_cmd(pattern=".*")
+async def auto_reply(event):
+    try:
+        message_text = event.text.lower()
+        is_private = event.is_private
+        is_group = event.is_group or event.is_supergroup
+        replied_to_me = False
+
+        # تحقق إذا الكروب والرسالة رد عليك
+        if is_group and event.reply_to_msg_id:
+            replied_msg = await event.get_reply_message()
+            if replied_msg.from_id == (await zedub.get_me()).id:
+                replied_to_me = True
+
+        for keyword, replies in auto_replies.items():
+            if keyword in message_text:  # <-- أي جزء من الرسالة يحتوي الجملة
+                reply_text = random.choice(replies)  # اختيار رد عشوائي
+                # الخاص → الرد دايمًا
+                if is_private:
+                    await asyncio.sleep(0.5)
+                    await event.reply(reply_text)
+                    break
+                
+                elif is_group and replied_to_me:
+                    await asyncio.sleep(0.5)
+                    await event.reply(reply_text)
+                    break
+
+    except Exception as e:
+        print(f"Error in auto_reply: {e}")
 
 
 
