@@ -2,6 +2,7 @@ import re
 import os
 import typing
 import asyncio
+import json
 from pytz import timezone
 from random import choice
 import asyncio
@@ -38,6 +39,75 @@ from ..helpers.utils import _format
 from ..core.logger import logging
 from ..core.managers import edit_or_reply, edit_delete
 from . import BOTLOG, BOTLOG_CHATID
+
+
+
+
+
+
+
+
+ARCHIVE_FILE = "copied_messages.json"
+
+@zedub.zed_cmd(pattern=r"^.نسخ (.+)")
+async def copy_channel_messages(event):
+    try:
+        channel_username = event.pattern_match.group(1)
+        messages_to_copy = []
+
+    
+        async for post in zedub.client.iter_messages(channel_username, reverse=True):
+            if not (post.text or post.photo or post.video or post.document):
+                continue
+            messages_to_copy.append(post)
+
+        count = 0
+        archived_messages = []
+
+        for post in messages_to_copy:
+            try:
+                text = post.text or ""
+
+                
+                if post.text:
+                    await event.reply(text)
+                elif post.photo:
+                    await event.reply(file=post.photo.file_id, message=text)
+                elif post.video:
+                    await event.reply(file=post.video.file_id, message=text)
+                elif post.document:
+                    await event.reply(file=post.document.file_id, message=text)
+
+                
+                archived_messages.append({
+                    "id": post.id,
+                    "text": post.text,
+                    "media_type": "photo" if post.photo else "video" if post.video else "document" if post.document else "text",
+                    "date": str(post.date)
+                })
+
+                count += 1
+                await asyncio.sleep(0.5) 
+            except Exception:
+                continue
+
+        
+        with open(ARCHIVE_FILE, "w", encoding="utf-8") as f:
+            json.dump(archived_messages, f, ensure_ascii=False, indent=4)
+
+        await event.reply(f"**⎙ تم نسخ {count} منشور(منشورات) بنجاح!**\n📂 تم حفظ نسخة في الملف `{ARCHIVE_FILE}`")
+
+    except Exception as e:
+        await event.reply(f"❌ خطأ غير متوقع:\n`{str(e)}`")
+
+
+
+
+
+
+
+
+
 
 invite_text = """
 <b>ᯓ <a href = https://t.me/QU_QUU/1>𝙈𝙖𝙏𝙍𝙞𝙭 𝗩𝗶𝗽 🚹 إضـافـة الأعضـاء</a> </b>
