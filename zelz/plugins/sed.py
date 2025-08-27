@@ -96,28 +96,43 @@ async def zzz_info(zthon_user, event): #Write Code By Zelzal T.me/zzzzl1l
 async def repozedub(event):
     global bbb
     if gvarstatus("ZThon_Vip") is None and Zel_Uid not in Zed_Dev:
-        return await edit_or_reply(event, "**⎉╎عـذࢪاً .. ؏ـزيـزي\n⎉╎هـذا الامـر ليـس مجـانـي📵\n⎉╎للاشتـراك في الاوامـر المدفوعـة\n⎉╎تواصـل مطـور السـورس @dev_blal**")
-    user = event.pattern_match.group(1)
-    if not user and not event.reply_to_msg_id:
-        return
+        return await edit_or_reply(event, "**⎉╎عذراً .. هذا الامر ليس مجاني📵**")
+    
+    # جلب المستخدم
     zthon_user = await get_user_from_event(event)
+    if not zthon_user:
+        return await edit_or_reply(event, "❌ الرجاء الرد على الشخص أو تحديده باليوزر")
+    
     try:
         user_id, full_name, username = await zzz_info(zthon_user, event)
-    except (AttributeError, TypeError):
-        return
+    except Exception as e:
+        return await edit_or_reply(event, f"❌ حدث خطأ: {str(e)}")
+    
+    # تخزين معلومات الهمسة
     delgvar("hmsa_id")
     delgvar("hmsa_name")
     delgvar("hmsa_user")
     addgvar("hmsa_id", user_id)
     addgvar("hmsa_name", full_name)
     addgvar("hmsa_user", username)
-    if gvarstatus("hmsa_id"):
-    	bbb = [(Button.switch_inline("اضـغـط هنـا", query=("secret " + gvarstatus("hmsa_id") + " \nهلو"), same_peer=True))]
-    else:
-    	bbb = [(Button.switch_inline("اضغـط هنـا", query=("secret " + gvarstatus("hmsa_id") + " \nهلو"), same_peer=True))]
-    response = await zedub.inline_query(Config.TG_BOT_USERNAME, "zelzal")
-    await response[0].click(event.chat_id)
+    
+    # زر لإرسال الهمسة مباشر
+    bbb = [Button.inline("اضغط لإرسال همسة", data=f"hmsa_{user_id}")]
+    
+    # رسالة مع الزر
+    await event.respond(f"💌 همسة محفوظة لـ {full_name}", buttons=bbb)
     await event.delete()
+
+# الحدث عند الضغط على الزر
+@zedub.zedub.on(events.CallbackQuery(pattern=r"hmsa_(\d+)"))
+async def callback_hmsah(event):
+    user_id = int(event.pattern_match.group(1))
+    try:
+        await event.client.send_message(user_id, "💌 لديك همسة جديدة!")
+        await event.answer("تم إرسال الهمسة ✅", alert=True)
+    except Exception as e:
+        await event.answer(f"❌ خطأ: {str(e)}", alert=True)
+
 
 @zedub.zed_cmd(pattern="اهمس(?: |$)(.*)")
 async def repozedub(event):
