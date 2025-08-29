@@ -44,6 +44,82 @@ from ..helpers.functions.utube import _mp3Dl, get_yt_video_id, get_ytthumb, ytse
 from ..helpers.utils import _format
 from . import BOTLOG, BOTLOG_CHATID, zedub
 
+
+
+
+from telethon import Button, events
+from io import BytesIO
+from PIL import Image, ImageEnhance, ImageSequence
+
+
+# دالة لتحويل صورة أو إطار GIF إلى أنمي عبر API
+async def anime_convert(image_bytes):
+    async with aiohttp.ClientSession() as session:
+        data = aiohttp.FormData()
+        data.add_field("image", image_bytes, filename="image.jpg")
+        async with session.post("https://api.trace.moe/convert/anime", data=data) as resp:
+            if resp.status != 200:
+                return None
+            return await resp.read()
+
+# دالة لتطبيق فلتر ألوان (اختياري)
+def apply_filter(image_bytes, brightness=1.2, contrast=1.2):
+    image = Image.open(BytesIO(image_bytes))
+    enhancer_b = ImageEnhance.Brightness(image)
+    image = enhancer_b.enhance(brightness)
+    enhancer_c = ImageEnhance.Contrast(image)
+    image = enhancer_c.enhance(contrast)
+    output = BytesIO()
+    image.save(output, format="PNG")
+    output.seek(0)
+    return output
+
+# أمر تحويل الصور إلى أنمي
+@zedub.zed_cmd(pattern="انمي$")
+async def convert_to_anime(event):
+    reply = await event.get_reply_message()
+    if not reply:
+        return await event.reply("📌 الرجاء الرد على صورة أو رابط لتحويلها إلى أنمي")
+
+    await event.reply("⏳ جاري تحويل الصورة إلى أنمي...")
+
+    image_bytes = None
+
+    # إذا كانت الصورة مرفقة
+    if reply.photo:
+        image_bytes = await reply.download_media(file=BytesIO())
+    # إذا كانت رابط
+    elif reply.text and (reply.text.startswith("http://") or reply.text.startswith("https://")):
+        try:
+            resp = requests.get(reply.text)
+            if resp.status_code == 200:
+                image_bytes = BytesIO(resp.content)
+        except Exception:
+            return await event.reply("❌ لم أتمكن من تحميل الصورة من الرابط")
+    else:
+        return await event.reply("❌ لم يتم العثور على صورة أو رابط صالح")
+
+    if not image_bytes:
+        return await event.reply("❌ حدث خطأ أثناء تحميل الصورة")
+
+    # تحويل الصورة
+    result_bytes = await anime_convert(image_bytes.getvalue())
+    if not result_bytes:
+        return await event.reply("❌ حدث خطأ أثناء التحويل")
+
+    # تطبيق فلتر ألوان
+    final_image = apply_filter(result_bytes)
+
+    # إرسال الصورة النهائية
+    await event.reply(file=final_image, caption="✨ تم تحويل الصورة إلى أنمي بنجاح!")
+
+
+
+
+
+
+
+
 BASE_YT_URL = "https://www.youtube.com/watch?v="
 extractor = URLExtract()
 LOGS = logging.getLogger(__name__)
