@@ -52,66 +52,66 @@ from io import BytesIO
 from PIL import Image, ImageEnhance, ImageSequence
 
 
-# دالة لتحويل صورة أو إطار GIF إلى أنمي عبر API
-async def anime_convert(image_bytes):
-    async with aiohttp.ClientSession() as session:
-        data = aiohttp.FormData()
-        data.add_field("image", image_bytes, filename="image.jpg")
-        async with session.post("https://api.trace.moe/convert/anime", data=data) as resp:
-            if resp.status != 200:
-                return None
-            return await resp.read()
+import os
+import asyncio
+from io import BytesIO
+from PIL import Image
+import torch
+from telethon import Button, events
+from telethon.tl.types import MessageMediaPhoto
+from telethon.errors import RPCError
 
-# دالة لتطبيق فلتر ألوان (اختياري)
-def apply_filter(image_bytes, brightness=1.2, contrast=1.2):
-    image = Image.open(BytesIO(image_bytes))
-    enhancer_b = ImageEnhance.Brightness(image)
-    image = enhancer_b.enhance(brightness)
-    enhancer_c = ImageEnhance.Contrast(image)
-    image = enhancer_c.enhance(contrast)
-    output = BytesIO()
-    image.save(output, format="PNG")
-    output.seek(0)
-    return output
+from . import zedub
+from ..Config import Config
+from ..helpers.functions import edit_or_reply
 
-# أمر تحويل الصور إلى أنمي
-@zedub.zed_cmd(pattern="انمي$")
-async def convert_to_anime(event):
-    reply = await event.get_reply_message()
-    if not reply:
-        return await event.reply("📌 الرجاء الرد على صورة أو رابط لتحويلها إلى أنمي")
+# مكتبة AnimeGANv2 جاهزة للاستخدام
+from animegan2_pytorch import AnimeGANv2
 
-    await event.reply("⏳ جاري تحويل الصورة إلى أنمي...")
+# إعداد الـ AnimeGANv2 (موديل جاهز)
+device = "cuda" if torch.cuda.is_available() else "cpu"
+model = AnimeGANv2(pretrained=True, device=device)
 
-    image_bytes = None
+# دالة تحويل الصورة
+async def convert_to_anime(image_bytes):
+    try:
+        img = Image.open(BytesIO(image_bytes)).convert("RGB")
+        img_tensor = model.transform(img)
+        output = BytesIO()
+        img_tensor.save(output, format="PNG")
+        output.seek(0)
+        return output
+    except Exception as e:
+        raise RuntimeError(f"Error converting image: {str(e)}")
 
-    # إذا كانت الصورة مرفقة
-    if reply.photo:
-        image_bytes = await reply.download_media(file=BytesIO())
-    # إذا كانت رابط
-    elif reply.text and (reply.text.startswith("http://") or reply.text.startswith("https://")):
-        try:
-            resp = requests.get(reply.text)
-            if resp.status_code == 200:
-                image_bytes = BytesIO(resp.content)
-        except Exception:
-            return await event.reply("❌ لم أتمكن من تحميل الصورة من الرابط")
-    else:
-        return await event.reply("❌ لم يتم العثور على صورة أو رابط صالح")
+# الأمر الجديد
+@zedub.zed_cmd(pattern="انميي(?: |$)(.*)")
+async def anime_convert(event):
+    try:
+        reply = await event.get_reply_message()
+        if not reply or not reply.media:
+            return await edit_or_reply(event, "❌ الرجاء الرد على صورة لتحويلها إلى أنمي")
+        
+        if hasattr(reply.media, "photo") and reply.media.photo:
+            # تحميل الصورة
+            image_bytes_io = BytesIO()
+            await reply.download_media(file=image_bytes_io)
+            image_bytes_io.seek(0)
 
-    if not image_bytes:
-        return await event.reply("❌ حدث خطأ أثناء تحميل الصورة")
+            # تحويل الصورة
+            output_bytes_io = await convert_to_anime(image_bytes_io.getvalue())
 
-    # تحويل الصورة
-    result_bytes = await anime_convert(image_bytes.getvalue())
-    if not result_bytes:
-        return await event.reply("❌ حدث خطأ أثناء التحويل")
-
-    # تطبيق فلتر ألوان
-    final_image = apply_filter(result_bytes)
-
-    # إرسال الصورة النهائية
-    await event.reply(file=final_image, caption="✨ تم تحويل الصورة إلى أنمي بنجاح!")
+            # إرسال الصورة بعد التحويل
+            await event.client.send_file(event.chat_id, output_bytes_io, caption="✅ تم تحويل الصورة إلى أنمي")
+            await event.delete()
+        else:
+            await edit_or_reply(event, "❌ الرجاء الرد على صورة فقط")
+    
+    except Exception as e:
+        # Logging كامل لأي خطأ
+        log_text = f"❌ حدث خطأ أثناء تحويل الصورة إلى أنمي:\n{str(e)}"
+        print(log_text)
+        await edit_or_reply(event, log_text)
 
 
 
