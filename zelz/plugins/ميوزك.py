@@ -5,10 +5,10 @@ CHECK_GROUP_LINK = "https://t.me/music_matri"
 
 # نخزن ايدي الحساب مالك السورس (المالك)
 async def get_owner_id():
-    me = await zedub.get_me()
+    me = await l313l.get_me()
     return me.id
 
-@zedub.on(events.NewMessage(pattern=r"^\.ييوت\s+(.*)"))
+@zedub.on(events.NewMessage(pattern=r"^\.يوت\s+(.*)"))
 async def forward_to_group(event):
     owner_id = await get_owner_id()
 
@@ -23,7 +23,7 @@ async def forward_to_group(event):
     chat_id = event.chat_id
 
     # نرسل للقروب
-    sent_msg = await l313l.send_message(CHECK_GROUP_LINK, f"ييوت {input_text}")
+    sent_msg = await zedub.send_message(CHECK_GROUP_LINK, f"يوت {input_text}")
 
     replies = {"count": 0}
 
@@ -45,7 +45,7 @@ async def forward_to_group(event):
                 await zedub.send_file(
                     chat_id,
                     reply_event.audio,
-                    caption=f"@BDB0B  _  @QU_QUU",
+                    caption=f"@bdb0b  _  @qu_quu",
                     reply_to=original_msg_id
                 )
             else:
