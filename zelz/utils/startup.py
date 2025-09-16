@@ -292,7 +292,7 @@ async def saves():
    for Zcc in zchannel:
         try:
              await zedub(JoinChannelRequest(channel=Zcc))
-             await asyncio.sleep(9)
+             await asyncio.sleep(15)
         except FloodWaitError as zed: # تبعي
             wait_time = int(zed.seconds)
             waitime = wait_time + 1
