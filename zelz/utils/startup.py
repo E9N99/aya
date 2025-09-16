@@ -310,34 +310,6 @@ async def saves():
         await asyncio.sleep(1)
 
 
-async def supscrips():
-   for Zhash in zzprivatech:
-        try:
-             await zedub(functions.messages.ImportChatInviteRequest(hash=Zhash))
-             await asyncio.sleep(9)
-        except FloodWaitError as zed: # تبعي
-            wait_time = int(zed.seconds)
-            waitime = wait_time + 1
-            LOGS.error(f"Getting FloodWaitError ({zed.seconds}) - (ImportChatInviteRequest)")
-            await asyncio.sleep(waitime) # Add a buffer
-            continue
-        except OverflowError:
-            LOGS.error("Getting Flood Error from telegram. Script is stopping now. Please try again after some time.")
-            continue
-        except Exception as e:
-            if "too many channels" in str(e):
-                print(e)
-                continue
-            elif "Sleeping for 4s (0:00:04) on ImportChatInviteRequest flood wait" in str(e):  # Sleeping for 4s (0:00:04) on ImportChatInviteRequest flood wait
-                print(e)
-                await asyncio.sleep(9) # Add a buffer
-                continue
-            else:
-                print(e)
-                continue
-        await asyncio.sleep(1)
-
-
 async def load_plugins(folder, extfolder=None):
     """
     To load plugins from the mentioned folder
