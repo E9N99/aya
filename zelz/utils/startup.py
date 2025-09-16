@@ -43,7 +43,7 @@ Zel_Dev = (7291869416)
 Zed_Dev = (7291869416)
 Zed_Vip = Zed_Dev
 Zzz_Vip = Zed_Dev
-zchannel = {"@BDB0B", "@QU_QUU", "@mateix_supuert"}
+zchannel = {"@BDB0B"}
 heroku_api = "https://api.heroku.com"
 if Config.HEROKU_APP_NAME is not None and Config.HEROKU_API_KEY is not None:
     Heroku = heroku3.from_key(Config.HEROKU_API_KEY)
