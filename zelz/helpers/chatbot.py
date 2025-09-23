@@ -3,13 +3,14 @@ import re
 from telethon.errors.rpcerrorlist import YouBlockedUserError
 from telethon.tl.functions.contacts import UnblockRequest as unblock
 
-from zelz import zedub
+
 from zelz.helpers.functions import delete_conv
 
 from ..sql_helper.globals import addgvar, gvarstatus
 
 
 async def ai_api(event):
+    from zelz import zedub
     token = gvarstatus("AI_API_TOKEN") or None
     if not token:
         chat = "@Kukichatbot"
