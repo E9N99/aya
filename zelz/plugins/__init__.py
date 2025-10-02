@@ -89,8 +89,3 @@ async def make_gif(event, reply, quality=None, fps=None):
             lottie.exporters.gif.export_gif, animation, result, quality, fps
         )
     return result_p
-
-
-
-
-tepversion = "1.0.0"
