@@ -93,4 +93,4 @@ async def make_gif(event, reply, quality=None, fps=None):
 
 
 
-tepversion = "1.0.0"
+zedversion = "3.3.4"
